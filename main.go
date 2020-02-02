@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/xprazak2/sched/users"
 )
 
 func main() {
@@ -12,6 +13,9 @@ func main() {
 			"message": "pong",
 		})
 	})
+
+	userRoutes := router.Group("/users")
+	userRoutes.GET("/", users.UsersHandler)
 
 	router.Run()
 }
