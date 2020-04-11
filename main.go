@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"github.com/xprazak2/sched/users"
@@ -23,6 +24,9 @@ func main() {
   defer db.Close()
 
 	router := gin.Default()
+
+	// TODO configure origin from command line to fix the security issue
+	router.Use(cors.Default())
 
 	userRoutes := router.Group("/users")
 	userRoutes.GET("/", users.UsersHandler)
