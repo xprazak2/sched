@@ -68,14 +68,19 @@ func UserUpdateHandler(ctx *gin.Context) {
 	err = db.First(&user, id).Error
 
 	if &user != nil {
+
 		validator := UpdateUserValidator(user)
 
 		if err := validator.Bind(ctx); err != nil {
 			ctx.JSON(http.StatusUnprocessableEntity, gin.H{"validationError": errors.NewValidationError(err)})
 		} else {
-			fmt.Sprintf("%+v", &validator.user)
+			updateErr := db.Save(&validator.user).Error
 
-			ctx.JSON(http.StatusOK, gin.H{"user": validator.user.ToResponse() })
+			if updateErr != nil {
+				ctx.JSON(http.StatusUnprocessableEntity, gin.H{"error": fmt.Sprintf("%v", updateErr) })
+			} else {
+				ctx.JSON(http.StatusOK, gin.H{"user": validator.user.ToResponse() })
+			}
 		}
 	} else {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("User with id %v not found", id)})
